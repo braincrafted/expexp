@@ -1,17 +1,17 @@
 <?php
 
-namespace Ninjawhois\Tests\RegExpExpansion;
+namespace Trtj\Tests\ExpExp;
 
-use Ninjawhois\RegExpExpansion\RegExpExpansion;
+use Trtj\ExpExp\ExpExp;
 
-require_once __DIR__ . '/../../../../src/Ninjawhois/RegExpExpansion/RegExpExpansion.php';
+require_once __DIR__ . '/../../../../src/Trtj/ExpExp/ExpExp.php';
 
-class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
+class ExpExpTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testExpandSimpleDisjunction()
     {
-    	$r = new RegExpExpansion('[abc]xyz[abc]');
+    	$r = new ExpExp('[abc]xyz[abc]');
     	$result = $r->expand();
     	$this->assertCount(9, $result);
     	$this->assertContains('axyza', $result);
@@ -27,12 +27,12 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testExpandEscapedDisjunction()
     {
-    	$r = new RegExpExpansion('\[abc\]xyz\[abc\]');
+    	$r = new ExpExp('\[abc\]xyz\[abc\]');
     	$result = $r->expand();
     	$this->assertCount(1, $result);
     	$this->assertContains('[abc]xyz[abc]', $result);
 
-		$r = new RegExpExpansion('\\\abc');
+		$r = new ExpExp('\\\abc');
     	$result = $r->expand();
     	$this->assertCount(1, $result);
     	$this->assertContains('\abc', $result);
@@ -40,7 +40,7 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testExpandDotOperator()
     {
-    	$r = new RegExpExpansion('ab.');
+    	$r = new ExpExp('ab.');
     	$result = $r->expand();
     	$this->assertCount(63, $result);
     	$this->assertContains('abA', $result);
@@ -48,7 +48,7 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
     	$this->assertContains('ab0', $result);
     	$this->assertContains('ab-', $result);
 
-    	$r = new RegExpExpansion('ab\.');
+    	$r = new ExpExp('ab\.');
     	$result = $r->expand();
     	$this->assertCount(1, $result);
     	$this->assertContains('ab.', $result);
@@ -56,7 +56,7 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 
 	public function FunctionName($value='')
 	{
-		$r = new RegExpExpansion('ab(c)');
+		$r = new ExpExp('ab(c)');
 		$result = $r->expand();
 		$this->assertCount(1, $result);
 		$this->assertContains('abc', $result);
@@ -64,19 +64,19 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testExpandAlternation()
     {
-		$r = new RegExpExpansion('abc|xyz');
+		$r = new ExpExp('abc|xyz');
 		$result = $r->expand();
 		$this->assertCount(2, $result);
 		$this->assertContains('abc', $result);
 		$this->assertContains('xyz', $result);
 
-		$r = new RegExpExpansion('ab(c|d)');
+		$r = new ExpExp('ab(c|d)');
 		$result = $r->expand();
 		$this->assertCount(2, $result);
 		$this->assertContains('abc', $result);
 		$this->assertContains('abd', $result);
 
-		$r = new RegExpExpansion('ab(cde|[xyz])');
+		$r = new ExpExp('ab(cde|[xyz])');
 		$result = $r->expand();
 		$this->assertCount(4, $result);
 		$this->assertContains('abcde', $result);
@@ -87,13 +87,13 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testOptional()
     {
-    	$r = new RegExpExpansion('abc?');
+    	$r = new ExpExp('abc?');
     	$result = $r->expand();
     	$this->assertCount(2, $result);
     	$this->assertContains('abc', $result);
     	$this->assertContains('ab', $result);
 
-    	$r = new RegExpExpansion('abc(xyz)?');
+    	$r = new ExpExp('abc(xyz)?');
     	$result = $r->expand();
     	$this->assertCount(2, $result);
     	$this->assertContains('abc', $result);

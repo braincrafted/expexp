@@ -1,8 +1,8 @@
 <?php
 
-namespace Ninjawhois\RegExpExpansion;
+namespace Trtj\ExpExp;
 
-class RegExpExpansion
+class ExpExp
 {
 
 	/** @var string */
@@ -40,7 +40,7 @@ class RegExpExpansion
 				$parantheses = true;
 			}
 			elseif (false === $escape && $parantheses && ')' === $char) {
-				$bufferExpansion = new RegExpExpansion($buffer);
+				$bufferExpansion = new ExpExp($buffer);
 				$expanded_buffer = $bufferExpansion->expand();
 				if ('?' === $next_char) {
 					$expanded_buffer[] = '';

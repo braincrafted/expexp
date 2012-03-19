@@ -72,7 +72,7 @@ Usage
 
 Do not use in production!
 
-	$r = new RegExpExpansion('abc|xyz');
+	$r = new ExpExp('abc|xyz');
 	$result = $r->expand();
 
 More examples can be found in the test cases.
