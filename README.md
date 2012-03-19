@@ -55,8 +55,10 @@ will be expanded to
 	
 will be expanded to
 
-* `abc`
-* `ab`
+ * `abc`
+ * `ab`
+
+This also works with parantheses:
 
 	abc(xyz)?
 
