@@ -1,7 +1,7 @@
-RegExp Expansion
-================
+ExpExp
+======
 
-RegExp Expansion is a experimental tool to expand regular expressions.
+ExpExp is a small library that allows to expand an expression similar to regular expressions.
 
 By [Florian Eckerstorfer](http://florianeckerstorfer.com)
 
