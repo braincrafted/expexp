@@ -38,4 +38,20 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
     	$this->assertContains('\abc', $result);
     }
 
+    public function testExpandDotOperator()
+    {
+    	$r = new RegExpExpansion('ab.');
+    	$result = $r->expand();
+    	$this->assertCount(63, $result);
+    	$this->assertContains('abA', $result);
+    	$this->assertContains('aba', $result);
+    	$this->assertContains('ab0', $result);
+    	$this->assertContains('ab-', $result);
+
+    	$r = new RegExpExpansion('ab\.');
+    	$result = $r->expand();
+    	$this->assertCount(1, $result);
+    	$this->assertContains('ab.', $result);
+    }
+
 }

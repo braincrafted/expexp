@@ -14,6 +14,9 @@ class RegExpExpansion
 	/** @var array */
 	private $result = array();
 
+	/** @var string */
+	public $dot_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
+
 	public function __construct($pattern)
 	{
 		$this->pattern = $pattern;
@@ -40,6 +43,9 @@ class RegExpExpansion
 			}
 			elseif ($disjunction) {
 				$disjunct_chars[] = $char;
+			}
+			elseif (false === $escape && '.' === $char) {
+				$this->result = $this->addToAll($this->result, str_split($this->dot_chars, 1));
 			}
 			else {
 				$this->result = $this->addChar($this->result, $char);
