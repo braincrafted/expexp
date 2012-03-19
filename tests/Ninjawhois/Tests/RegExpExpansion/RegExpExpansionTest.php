@@ -54,4 +54,35 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
     	$this->assertContains('ab.', $result);
     }
 
+	public function FunctionName($value='')
+	{
+		$r = new RegExpExpansion('ab(c)');
+		$result = $r->expand();
+		$this->assertCount(1, $result);
+		$this->assertContains('abc', $result);
+	}
+
+    public function testExpandAlternation()
+    {
+		$r = new RegExpExpansion('abc|xyz');
+		$result = $r->expand();
+		$this->assertCount(2, $result);
+		$this->assertContains('abc', $result);
+		$this->assertContains('xyz', $result);
+
+		$r = new RegExpExpansion('ab(c|d)');
+		$result = $r->expand();
+		$this->assertCount(2, $result);
+		$this->assertContains('abc', $result);
+		$this->assertContains('abd', $result);
+
+		$r = new RegExpExpansion('ab(cde|[xyz])');
+		$result = $r->expand();
+		$this->assertCount(4, $result);
+		$this->assertContains('abcde', $result);
+		$this->assertContains('abx', $result);
+		$this->assertContains('aby', $result);
+		$this->assertContains('abz', $result);
+    }
+
 }

@@ -12,7 +12,7 @@ class RegExpExpansion
 	private $pos = 0;
 
 	/** @var array */
-	private $result = array();
+	private $result = array(), $result_buffer = array();
 
 	/** @var string */
 	public $dot_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
@@ -27,11 +27,25 @@ class RegExpExpansion
 		$escape = false;
 		$disjunction = false;
 		$disjunct_chars = array();
+		$parantheses = false;
+		$buffer = '';
 
 		while ($this->pos < strlen($this->pattern)) {
 			$char = $this->charAt($this->pattern, $this->pos);
 			if (false === $escape && '\\' === $char) {
 				$escape = $this->pos;
+			}
+			elseif (false === $escape && '(' === $char) {
+				$parantheses = true;
+			}
+			elseif (false === $escape && $parantheses && ')' === $char) {
+				$bufferExpansion = new RegExpExpansion($buffer);
+				$this->result = $this->addToAll($this->result, $bufferExpansion->expand());
+				$parantheses = false;
+				$buffer = '';
+			}
+			elseif ($parantheses) {
+				$buffer = $buffer . $char;
 			}
 			elseif (false === $escape && '[' === $char) {
 				$disjunction = true;
@@ -47,6 +61,10 @@ class RegExpExpansion
 			elseif (false === $escape && '.' === $char) {
 				$this->result = $this->addToAll($this->result, str_split($this->dot_chars, 1));
 			}
+			elseif (false === $escape && '|' === $char) {
+				$this->result_buffer[] = $this->result;
+				$this->result = array();
+			}
 			else {
 				$this->result = $this->addChar($this->result, $char);
 			}
@@ -59,6 +77,13 @@ class RegExpExpansion
 			$this->pos++;
 		}
 
+		if (count($this->result_buffer) > 0) {
+			$result = array();
+			foreach ($this->result_buffer as $item) {
+				$result = array_merge($result, $item);
+			}
+			$this->result = array_merge($result, $this->result);
+		}
 		return $this->result;
 	}
 
