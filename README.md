@@ -49,6 +49,22 @@ will be expanded to
 * `abc`
 * `xyz`
 
+**Optional:**
+
+	abc?
+	
+will be expanded to
+
+* `abc`
+* `ab`
+
+	abc(xyz)?
+
+will be expanded to
+
+* `abc`
+* `abcxyz`
+
 Usage
 -----
 

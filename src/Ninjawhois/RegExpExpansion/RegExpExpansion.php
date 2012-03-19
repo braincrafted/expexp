@@ -32,6 +32,7 @@ class RegExpExpansion
 
 		while ($this->pos < strlen($this->pattern)) {
 			$char = $this->charAt($this->pattern, $this->pos);
+			$next_char = strlen($this->pattern) > $this->pos ? $this->charAt($this->pattern, $this->pos + 1) : '';
 			if (false === $escape && '\\' === $char) {
 				$escape = $this->pos;
 			}
@@ -40,7 +41,12 @@ class RegExpExpansion
 			}
 			elseif (false === $escape && $parantheses && ')' === $char) {
 				$bufferExpansion = new RegExpExpansion($buffer);
-				$this->result = $this->addToAll($this->result, $bufferExpansion->expand());
+				$expanded_buffer = $bufferExpansion->expand();
+				if ('?' === $next_char) {
+					$expanded_buffer[] = '';
+					$this->pos++;
+				}
+				$this->result = $this->addToAll($this->result, $expanded_buffer);
 				$parantheses = false;
 				$buffer = '';
 			}
@@ -66,7 +72,13 @@ class RegExpExpansion
 				$this->result = array();
 			}
 			else {
-				$this->result = $this->addChar($this->result, $char);
+				if ('?' === $next_char) {
+					$this->result = $this->addToAll($this->result, array($char, ''));
+					$this->pos++;
+				}
+				else {
+					$this->result = $this->addChar($this->result, $char);
+				}
 			}
 
 			// $escape contains the position when the escape occured, if we passed the escaped characters, reset the flag.

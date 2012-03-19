@@ -85,4 +85,19 @@ class RegExpExpansionTest extends \PHPUnit_Framework_TestCase
 		$this->assertContains('abz', $result);
     }
 
+    public function testOptional()
+    {
+    	$r = new RegExpExpansion('abc?');
+    	$result = $r->expand();
+    	$this->assertCount(2, $result);
+    	$this->assertContains('abc', $result);
+    	$this->assertContains('ab', $result);
+
+    	$r = new RegExpExpansion('abc(xyz)?');
+    	$result = $r->expand();
+    	$this->assertCount(2, $result);
+    	$this->assertContains('abc', $result);
+    	$this->assertContains('abcxyz', $result);
+    }
+
 }
