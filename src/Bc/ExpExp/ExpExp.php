@@ -1,7 +1,23 @@
 <?php
+/**
+ * This file is part of BcExpExp.
+ *
+ * (c) 2011-2013 Florian Eckerstorfer <florian@eckerstorfer.co>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
-namespace Trtj\ExpExp;
+namespace Bc\ExpExp;
 
+/**
+ * ExpExp
+ *
+ * @package   BcExpExp
+ * @author    Florian Eckerstorfer <florian@eckerstorfer.co>
+ * @copyright 2011-2013 Florian Eckerstorfer
+ * @license   http://opensource.org/licenses/MIT The MIT License
+ */
 class ExpExp
 {
 
@@ -17,12 +33,14 @@ class ExpExp
 	/** @var string */
 	public $dot_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
 
-	public function __construct($pattern)
-	{
-		$this->pattern = $pattern;
-	}
-
-	public function expand()
+	/**
+	 * Expands the pattern.
+	 *
+	 * @param string $pattern Pattern
+	 *
+	 * @return array Expanded pattern
+	 */
+	public function expand($pattern)
 	{
 		$escape = false;
 		$disjunction = false;
@@ -30,18 +48,17 @@ class ExpExp
 		$parantheses = false;
 		$buffer = '';
 
-		while ($this->pos < strlen($this->pattern)) {
-			$char = $this->charAt($this->pattern, $this->pos);
-			$next_char = strlen($this->pattern) > $this->pos ? $this->charAt($this->pattern, $this->pos + 1) : '';
+		while ($this->pos < strlen($pattern)) {
+			$char = $this->charAt($pattern, $this->pos);
+			$next_char = strlen($pattern) > $this->pos ? $this->charAt($pattern, $this->pos + 1) : '';
+
 			if (false === $escape && '\\' === $char) {
 				$escape = $this->pos;
-			}
-			elseif (false === $escape && '(' === $char) {
+			} else if (false === $escape && '(' === $char) {
 				$parantheses = true;
-			}
-			elseif (false === $escape && $parantheses && ')' === $char) {
-				$bufferExpansion = new ExpExp($buffer);
-				$expanded_buffer = $bufferExpansion->expand();
+			} else if (false === $escape && $parantheses && ')' === $char) {
+				$bufferExpansion = new ExpExp();
+				$expanded_buffer = $bufferExpansion->expand($buffer);
 				if ('?' === $next_char) {
 					$expanded_buffer[] = '';
 					$this->pos++;
@@ -49,34 +66,26 @@ class ExpExp
 				$this->result = $this->addToAll($this->result, $expanded_buffer);
 				$parantheses = false;
 				$buffer = '';
-			}
-			elseif ($parantheses) {
+			} else if ($parantheses) {
 				$buffer = $buffer . $char;
-			}
-			elseif (false === $escape && '[' === $char) {
+			} else if (false === $escape && '[' === $char) {
 				$disjunction = true;
-			}
-			elseif (false === $escape && $disjunction && ']' === $char) {
+			} else if (false === $escape && $disjunction && ']' === $char) {
 				$this->result = $this->addToAll($this->result, $disjunct_chars);
 				$disjunction = false;
 				$disjunct_chars = array();
-			}
-			elseif ($disjunction) {
+			} else if ($disjunction) {
 				$disjunct_chars[] = $char;
-			}
-			elseif (false === $escape && '.' === $char) {
+			} else if (false === $escape && '.' === $char) {
 				$this->result = $this->addToAll($this->result, str_split($this->dot_chars, 1));
-			}
-			elseif (false === $escape && '|' === $char) {
+			} else if (false === $escape && '|' === $char) {
 				$this->result_buffer[] = $this->result;
 				$this->result = array();
-			}
-			else {
+			} else {
 				if ('?' === $next_char) {
 					$this->result = $this->addToAll($this->result, array($char, ''));
 					$this->pos++;
-				}
-				else {
+				} else {
 					$this->result = $this->addChar($this->result, $char);
 				}
 			}
@@ -99,6 +108,13 @@ class ExpExp
 		return $this->result;
 	}
 
+	/**
+	 * Returns the character at the given position.
+	 *
+	 * @param string  $string   String
+	 * @param integer $position Position
+	 * @return string Character
+	 */
 	private function charAt($string, $position)
 	{
 		return substr($string, $position, 1);
@@ -110,7 +126,7 @@ class ExpExp
 		if (0 === $size) {
 			return array($char);
 		}
-		for ($i = 0; $i < $size; $i++) { 
+		for ($i = 0; $i < $size; $i++) {
 			$array[$i] = $array[$i] . $char;
 		}
 		return $array;

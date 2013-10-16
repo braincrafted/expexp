@@ -1,2 +1,4 @@
-*.sublime-project
-*.sublime-workspace
+/vendor/
+/code-coverage/
+/phpunit.xml
+/composer.lock

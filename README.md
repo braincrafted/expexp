@@ -1,24 +1,34 @@
 ExpExp
 ======
 
-ExpExp is a small library that allows to expand an expression similar to regular expressions.
+ExpExp expands expressions. That's kinda the opposite of what regular expressions do.
 
-By [Florian Eckerstorfer](http://florianeckerstorfer.com)
+For example `ab(cd|[xy])` expands to
 
-Support
--------
+- `abcd`,
+- `abx` and
+- `aby`.
+
+
+Author
+------
+
+- [Florian Eckerstorfer](http://florian.ec)
+
+Features
+--------
 
 The following expressions can be expanded by the library:
 
 **Disjunction:**
 
 	abc[xyz]
-	
+
 will be expanded to
 
-* `abcx`
-* `abcy`
-* `abcz`
+- `abcx`
+- `abcy`
+- `abcz`
 
 **Dot Operator:**
 
@@ -26,37 +36,37 @@ will be expanded to
 
 will be expanded to
 
-* `abcA`
-* `abcB`
-* …
+- `abcA`
+- `abcB`
+- …
 
 The Dot opterator does not expand to every character, but only to `A-Za-z0-9-`.
 
 **Parantheses:**
 
 	ab(c)
-	
+
 will be expanded to
 
-* `abc`
-	
+- `abc`
+
 **Alternation:**
 
 	abc|xyz
-	
+
 will be expanded to
 
-* `abc`
-* `xyz`
+- `abc`
+- `xyz`
 
 **Optional:**
 
 	abc?
-	
+
 will be expanded to
 
- * `abc`
- * `ab`
+ - `abc`
+ - `ab`
 
 This also works with parantheses:
 
@@ -64,18 +74,24 @@ This also works with parantheses:
 
 will be expanded to
 
-* `abc`
-* `abcxyz`
+- `abc`
+- `abcxyz`
 
 Usage
 -----
 
-Do not use in production!
+Instantiate the object and call the `expand()` method with the pattern:
 
-	$r = new ExpExp('abc|xyz');
-	$result = $r->expand();
+    use Bc\ExpExp\ExpExp;
+
+	$e = new ExpExp();
+	$result = $e->expand('abc|xyz');
 
 More examples can be found in the test cases.
 
 
+License
+-------
+
+ExpExp is licensed under The MIT License. See the `LICENSE` file in the projects root directory for more information.
 
