@@ -9,6 +9,7 @@ For example `ab(cd|[xy])` expands to
 - `abx` and
 - `aby`.
 
+[![Build Status](https://travis-ci.org/braincrafted/expexp.png?branch=master)](https://travis-ci.org/braincrafted/expexp)
 
 Author
 ------
