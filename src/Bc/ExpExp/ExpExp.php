@@ -20,18 +20,11 @@ namespace Bc\ExpExp;
  */
 class ExpExp
 {
-
-	/** @var string */
-	private $pattern;
-
-	/** @var integer */
-	private $pos = 0;
-
 	/** @var array */
-	private $result = array(), $result_buffer = array();
+	private $result = array(), $resultBuffer = array();
 
 	/** @var string */
-	public $dot_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
+	public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
 
 	/**
 	 * Expands the pattern.
@@ -42,69 +35,75 @@ class ExpExp
 	 */
 	public function expand($pattern)
 	{
+		$pos = 0;
 		$escape = false;
 		$disjunction = false;
-		$disjunct_chars = array();
-		$parantheses = false;
+		$disjunctCchars = array();
+		$parentheses = false;
 		$buffer = '';
 
-		while ($this->pos < strlen($pattern)) {
-			$char = $this->charAt($pattern, $this->pos);
-			$next_char = strlen($pattern) > $this->pos ? $this->charAt($pattern, $this->pos + 1) : '';
+		while ($pos < strlen($pattern)) {
+			$char = $this->charAt($pattern, $pos);
+			$nextChar = strlen($pattern) > $pos ? $this->charAt($pattern, $pos + 1) : '';
 
 			if (false === $escape && '\\' === $char) {
-				$escape = $this->pos;
+				$escape = $pos;
 			} else if (false === $escape && '(' === $char) {
-				$parantheses = true;
-			} else if (false === $escape && $parantheses && ')' === $char) {
+				$parentheses = true;
+			} else if (false === $escape && true === $parentheses && ')' === $char) {
+				// An open parentheses is closed, expand the pattern inside
 				$bufferExpansion = new ExpExp();
 				$expanded_buffer = $bufferExpansion->expand($buffer);
-				if ('?' === $next_char) {
+				if ('?' === $nextChar) {
 					$expanded_buffer[] = '';
-					$this->pos++;
+					$pos++;
 				}
 				$this->result = $this->addToAll($this->result, $expanded_buffer);
-				$parantheses = false;
+				$parentheses = false;
 				$buffer = '';
-			} else if ($parantheses) {
+			} else if (true === $parentheses) {
+				// Inside a parentheses
 				$buffer = $buffer . $char;
 			} else if (false === $escape && '[' === $char) {
+				// A disjunction section is about to start
 				$disjunction = true;
-			} else if (false === $escape && $disjunction && ']' === $char) {
-				$this->result = $this->addToAll($this->result, $disjunct_chars);
+			} else if (false === $escape && true === $disjunction && ']' === $char) {
+				// A disjunction is ending
+				$this->result = $this->addToAll($this->result, $disjunctCchars);
 				$disjunction = false;
-				$disjunct_chars = array();
-			} else if ($disjunction) {
-				$disjunct_chars[] = $char;
+				$disjunctCchars = array();
+			} else if (true === $disjunction) {
+				$disjunctCchars[] = $char;
 			} else if (false === $escape && '.' === $char) {
-				$this->result = $this->addToAll($this->result, str_split($this->dot_chars, 1));
+				$this->result = $this->addToAll($this->result, str_split($this->dotChars, 1));
 			} else if (false === $escape && '|' === $char) {
-				$this->result_buffer[] = $this->result;
+				$this->resultBuffer[] = $this->result;
 				$this->result = array();
 			} else {
-				if ('?' === $next_char) {
+				if ('?' === $nextChar) {
 					$this->result = $this->addToAll($this->result, array($char, ''));
-					$this->pos++;
+					$pos++;
 				} else {
 					$this->result = $this->addChar($this->result, $char);
 				}
 			}
 
 			// $escape contains the position when the escape occured, if we passed the escaped characters, reset the flag.
-			if ($this->pos > $escape) {
+			if ($pos > $escape) {
 				$escape = false;
 			}
 
-			$this->pos++;
+			$pos++;
 		}
 
-		if (count($this->result_buffer) > 0) {
+		if (count($this->resultBuffer) > 0) {
 			$result = array();
-			foreach ($this->result_buffer as $item) {
+			foreach ($this->resultBuffer as $item) {
 				$result = array_merge($result, $item);
 			}
 			$this->result = array_merge($result, $this->result);
 		}
+
 		return $this->result;
 	}
 
@@ -113,6 +112,7 @@ class ExpExp
 	 *
 	 * @param string  $string   String
 	 * @param integer $position Position
+	 *
 	 * @return string Character
 	 */
 	private function charAt($string, $position)
@@ -120,34 +120,51 @@ class ExpExp
 		return substr($string, $position, 1);
 	}
 
-	private function addChar($array, $char)
+	/**
+	 * Adds $char to each element in $array.
+	 *
+	 * @param array  $array Array
+	 * @param string $char  Character
+	 *
+	 * @return array Array with char added
+	 */
+	private function addChar(array $array, $char)
 	{
-		$size = count($array);
-		if (0 === $size) {
+		if (0 === count($array)) {
 			return array($char);
 		}
-		for ($i = 0; $i < $size; $i++) {
-			$array[$i] = $array[$i] . $char;
-		}
-		return $array;
+
+		return array_map(
+			function ($x) use ($char) {
+				return $x.$char;
+			},
+			$array
+		);
 	}
 
-	private function addToAll($array, $chars)
+	/**
+	 * Adds all characters from $chars to all elements from $array.
+	 *
+	 * @param array $array Array of strings
+	 * @param array $chars Array of chars
+	 *
+	 * @return array Array with chars added to strings
+	 */
+	private function addToAll(array $array, array $chars)
 	{
-		$new_array = array();
-		$size = count($array);
+		$newArray = array();
 
-		if (0 === $size) {
+		if (0 === count($array)) {
 			$array = array('');
 		}
 
 		for ($i = 0; $i < count($array); $i++) {
 			for ($j = 0; $j < count($chars); $j++) {
-				$new_array[] = $array[$i] . $chars[$j];
+				$newArray[] = $array[$i] . $chars[$j];
 			}
 		}
 
-		return $new_array;
+		return $newArray;
 	}
 
 }
