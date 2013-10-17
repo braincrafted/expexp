@@ -91,6 +91,21 @@ Instantiate the object and call the `expand()` method with the pattern:
 More examples can be found in the test cases.
 
 
+Changelog
+---------
+
+### Version 0.1.1 (2013-10-16)
+
+- Better code style
+- Better in-code documentation
+
+### Version 0.1 (2013-10-16)
+
+- Moved to `Bc` namespace
+- Call `expand()` with pattern
+- Better documentation
+
+
 License
 -------
 
