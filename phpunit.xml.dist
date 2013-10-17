@@ -2,14 +2,14 @@
 
 <phpunit bootstrap="vendor/autoload.php" colors="true">
     <testsuites>
-        <testsuite name="BcExpExp Test Suite">
-            <directory>tests/Bc/ExpExp/</directory>
+        <testsuite name="braincrafted/expexp Test Suite">
+            <directory>tests/Braincrafted/ExpExp/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory suffix=".php">src/Bc/ExpExp/</directory>
+            <directory suffix=".php">src/Braincrafted/ExpExp/</directory>
         </whitelist>
     </filter>
 </phpunit>
