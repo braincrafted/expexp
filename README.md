@@ -51,6 +51,28 @@ will be expanded to
 
 - `abc`
 
+**Multiplication:**
+
+The multiplication operator allows to repeat the previous character. If only one value is given the previous character is repeated that often, if two values are given the character is multiplied with each value in the given range. `{,3}` is the same as `{0,3}`.
+
+    a{3}
+
+will expand to
+
+- `aaa`
+
+Or with a minimum and a maximum value:
+
+    a{1,3}
+
+will expand to
+
+- `a`
+- `aa`
+- `aaa`
+
+This also works with disjunctions and parentheses.
+
 **Alternation:**
 
 	abc|xyz
@@ -77,6 +99,8 @@ will be expanded to
 
 - `abc`
 - `abcxyz`
+
+The optional operator has thus the same effect as `{0,1}`.
 
 Usage
 -----
