@@ -173,12 +173,11 @@ class ExpExp
 			return array($char);
 		}
 
-		return array_map(
-			function ($x) use ($char) {
-				return $x.$char;
-			},
-			$array
-		);
+		for ($i = 0; $i < count($array); $i++) {
+			$array[$i] .= $char;
+		}
+
+		return $array;
 	}
 
 	/**
