@@ -199,18 +199,20 @@ class ExpExp
 	 */
 	protected function repeat($pattern, $add)
 	{
+		if (false === is_array($add)) {
+			$add = [ $add ];
+		}
+
 		$bufferExp = new ExpExp;
 		$buffer = $bufferExp->expand(substr($pattern, $this->pos+1), '}')[0];
 		list($min, $max) = $this->parseRepetition($buffer);
+
 		$this->pos += $bufferExp->getPos();
+
 		$buffer = [];
 		for ($i = $min; $i <= $max; $i++) {
-			if (true === is_array($add)) {
-				foreach ($add as $el) {
-					$buffer[] = str_repeat($el, $i);
-				}
-			} else {
-				$buffer[] = str_repeat($add, $i);
+			foreach ($add as $el) {
+				$buffer[] = str_repeat($el, $i);
 			}
 		}
 
@@ -241,6 +243,12 @@ class ExpExp
 	    return [ $min, $max ];
 	}
 
+	/**
+	 * Returns the character class(es) with the given name(s). Multiple classes can be connected by +.
+	 *
+	 * @param string $name Character class or list of character classes
+	 * @return string List of characters from the given class(es)
+	 */
 	protected function getClass($name)
 	{
 	    $classes = '';
