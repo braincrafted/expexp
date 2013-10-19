@@ -31,7 +31,8 @@ class ExpExp
         'word'  => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_',
         'space' => "\t\n\r ",
         'vspace' => "\n\r",
-        'hspace' => "\t "
+        'hspace' => "\t ",
+        'punct' => '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
     ];
 
     /** @var integer */

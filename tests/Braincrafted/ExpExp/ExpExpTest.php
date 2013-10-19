@@ -52,6 +52,7 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
     public function testCompatibility($pattern, $x, $y)
     {
         $result = $this->exp->expand($pattern);
+        print_r($result);
 
         foreach ($result as $element) {
             if (0 === preg_match(sprintf('/%s/', $pattern), $element)) {
@@ -107,6 +108,7 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ '[[:upper:]]', 26, [ 'A', 'B', 'Z' ] ],
             [ '[[:word:]]', 63, [] ],
             [ '[[:space:]]', 4, [] ],
+            [ '[[:punct:]]', 32, [] ],
             [ '[[:lower:][:upper:]]', 52, [] ],
             // Escaped control characters
             [ '\[abc\]x', 1, [ '[abc]x' ] ],

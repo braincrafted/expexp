@@ -35,18 +35,15 @@ will be expanded to
 
 Instead of listing all disjunct characters, you can also select from a set of available character classes:
 
-- `upper` contains all uppercase characters (from ASCII)
-- `lower` contains all lowercase characters (from ASCII)
-- `digit` contains all digits
-- `space` contains all space characters
+- `upper` contains uppercase characters (from ASCII)
+- `lower` contains lowercase characters (from ASCII)
+- `digit` contains digits
+- `space` contains space characters
+- `punct` contains punctuation characters
 
 You can use named character classes by wrapping them in colons:
 
     [:upper:]
-
-Multiple character classes can be combined using the `+` operator:
-
-    [:lower+upper:]
 
 **Dot Operator:**
 
