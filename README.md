@@ -14,7 +14,7 @@ For example `ab(cd|[xy])` expands to
 Author
 ------
 
-- [Florian Eckerstorfer](http://florian.ec)
+- [Florian Eckerstorfer](http://florian.ec) ([Twitter](http://twitter.com/Florian_), [App.net](http://app.net/florian))
 
 Features
 --------
