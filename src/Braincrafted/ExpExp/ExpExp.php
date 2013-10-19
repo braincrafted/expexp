@@ -32,7 +32,8 @@ class ExpExp
 	/**
 	 * Expands the pattern.
 	 *
-	 * @param string $pattern Pattern
+	 * @param string $pattern  Pattern
+	 * @param string $stopChar Character on which the expansion should stop
 	 *
 	 * @return array Expanded pattern
 	 */
@@ -103,11 +104,21 @@ class ExpExp
 		return $this->result;
 	}
 
+	/**
+	 * Returns the current position of the expansion
+	 *
+	 * @return integer Current position of the expansion
+	 */
 	public function getPos()
 	{
 	    return $this->pos;
 	}
 
+	/**
+	 * Merges the results from the given alternatives with the result.
+	 *
+	 * @param array $alternates List of alternate results
+	 */
 	protected function mergeResults($alternates)
 	{
 		$buffer = [];
@@ -119,30 +130,48 @@ class ExpExp
 	    $this->result = array_merge($buffer, $this->result);
 	}
 
-	protected function add($char)
+	/**
+	 * Adds the given string to every element in the result.
+	 *
+	 * @param string $string String to add to the result
+	 */
+	protected function add($string)
 	{
 		$buffer = [];
 
 	    for ($i = 0; $i < count($this->result); $i++) {
-	    	$buffer[] = $this->result[$i].$char;
+	    	$buffer[] = $this->result[$i].$string;
 	    }
 
 	    $this->result = $buffer;
 	}
 
-	protected function addAll(array $chars)
+	/**
+	 * Adds all given strings to every element in the result.
+	 *
+	 * @param array $strings Array of strings to add to the result
+	 */
+	protected function addAll(array $strings)
 	{
 	    $buffer = [];
 
 	    for ($i = 0; $i < count($this->result); $i++) {
-	    	for ($j = 0; $j < count($chars); $j++) {
-	    		$buffer[] = $this->result[$i].$chars[$j];
+	    	for ($j = 0; $j < count($strings); $j++) {
+	    		$buffer[] = $this->result[$i].$strings[$j];
 	    	}
 	    }
 
 	    $this->result = $buffer;
 	}
 
+	/**
+	 * Repeats the given string depending on the given pattern.
+	 *
+	 * @param string $pattern Pattern
+	 * @param string $add     String to repeat
+	 *
+	 * @return array Result of the repetition
+	 */
 	protected function repeat($pattern, $add)
 	{
 		$bufferExp = new ExpExp;
@@ -163,6 +192,13 @@ class ExpExp
 		return $buffer;
 	}
 
+	/**
+	 * Parses the min and max values from the given repetition pattern.
+	 *
+	 * @param string $string Repetition pattern
+	 *
+	 * @return array Array with two values, min and max
+	 */
 	protected function parseRepetition($string)
 	{
 		if (0 === strlen($string)) {
