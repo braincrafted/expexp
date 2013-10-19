@@ -244,6 +244,10 @@ More examples can be found in the test cases.
 Changelog
 ---------
 
+### Version 0.2.1 (2013-10-19)
+
+- Named character classes
+
 ### Version 0.2 (2013-10-19)
 
 - Changed namespace to `Braincrafted`
