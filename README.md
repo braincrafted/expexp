@@ -31,6 +31,25 @@ will be expanded to
 - `abcy`
 - `abcz`
 
+**Named character classes:**
+
+Instead of listing all disjunct characters, you can also select from a set of available character classes:
+
+- `upper` contains all uppercase characters (from ASCII)
+- `lower` contains all lowercase characters (from ASCII)
+- `digit` contains all digits
+- `space` contains all space characters
+- `vspace` contains all vertical space characters
+- `hspace` contains all horizontal space characters
+
+You can use named character classes by wrapping them in colons:
+
+    [:upper:]
+
+Multiple character classes can be combined using the `+` operator:
+
+    [:lower+upper:]
+
 **Dot Operator:**
 
 	abc.

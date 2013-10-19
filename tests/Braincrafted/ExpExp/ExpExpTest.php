@@ -81,6 +81,21 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             // Optional
             [ 'abc?', 2, [ 'abc', 'ab' ] ],
             [ 'abc(xyz)?', 2, [ 'abc', 'abcxyz' ] ],
+            // Character classes
+            [ '\d', 10, [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ],
+            [ '\w', 63, [ '0', '1', 'A', 'M', '_', 'a', 'c', 'z' ] ],
+            [ '\s', 4, [ "\t", "\n", "\r", " " ] ],
+            [ '\v', 2, [ "\n", "\r" ] ],
+            [ '\h', 2, [ "\t", " " ] ],
+            // Named character classes
+            [ '[:digit:]', 10, [ '0', '1', '9' ] ],
+            [ '[:lower:]', 26, [ 'a', 'b', 'z' ] ],
+            [ '[:upper:]', 26, [ 'A', 'B', 'Z' ] ],
+            [ '[:word:]', 63, [] ],
+            [ '[:space:]', 4, [] ],
+            [ '[:vspace:]', 2, [] ],
+            [ '[:hspace:]', 2, [] ],
+            [ '[:lower+upper:]', 52, [] ],
             // Escaped control characters
             [ '\[abc\]x', 1, [ '[abc]x' ] ],
             [ '\[abc]x', 1, [ '[abc]x' ] ],
