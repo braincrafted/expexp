@@ -14,7 +14,7 @@ For example `ab(cd|[xy])` expands to
 Author
 ------
 
-- [Florian Eckerstorfer](http://florian.ec)
+- [Florian Eckerstorfer](http://florian.ec) ([Twitter](http://twitter.com/Florian_), [App.net](http://app.net/florian))
 
 Features
 --------
@@ -243,6 +243,10 @@ More examples can be found in the test cases.
 
 Changelog
 ---------
+
+### Version 0.2.1 (2013-10-19)
+
+- Named character classes
 
 ### Version 0.2 (2013-10-19)
 
