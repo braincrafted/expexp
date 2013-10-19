@@ -116,94 +116,94 @@ More examples
     </thead>
     <tbody>
         <tr>
-            <td>`abc`</td>
+            <td><code>abc</code></td>
             <td>1</td>
-            <td>`abc`</td>
+            <td><code>abc</code></td>
         </tr>
         <tr>
-            <td>`ab(c)`</td>
+            <td><code>ab(c)</code></td>
             <td>1</td>
-            <td>`abc`</td>
+            <td><code>abc</code></td>
         </tr>
         <tr>
-            <td>`[abc]`</td>
+            <td><code>[abc]</code></td>
             <td>3</td>
-            <td>`a`, `b`, `c`</td>
+            <td><code>a</code>, <code>b</code>, <code>c</code></td>
         </tr>
         <tr>
-            <td>`a{3}`</td>
+            <td><code>a{3}</code></td>
             <td>1</td>
-            <td>`aaa`</td>
+            <td><code>aaa</code></td>
         </tr>
         <tr>
-            <td>`a{}`</td>
+            <td><code>a{}</code></td>
             <td>1</td>
-            <td>`a`</td>
+            <td><code>a</code></td>
         </tr>
         <tr>
-            <td>`a{1,3}`</td>
+            <td><code>a{1,3}</code></td>
             <td>3</td>
-            <td>`a`, `aa`, `aaa`</td>
+            <td><code>a</code>, <code>aa</code>, <code>aaa</code></td>
         </tr>
         <tr>
-            <td>`a{,3}`</td>
+            <td><code>a{,3}</code></td>
             <td>4</td>
-            <td>``, `a`, `aa`, `aaa`</td>
+            <td><code></code>, <code>a</code>, <code>aa</code>, <code>aaa</code></td>
         </tr>
         <tr>
-            <td>`a(bc){2}`</td>
+            <td><code>a(bc){2}</code></td>
             <td>1</td>
-            <td>`abcbc`</td>
+            <td><code>abcbc</code></td>
         </tr>
         <tr>
-            <td>`a(bc){1,2}`</td>
+            <td><code>a(bc){1,2}</code></td>
             <td>2</td>
-            <td>`abcbc`, `abc`</td>
+            <td><code>abcbc</code>, <code>abc</code></td>
         </tr>
         <tr>
-            <td>`a(bc){,2}`</td>
+            <td><code>a(bc){,2}</code></td>
             <td>3</td>
-            <td>`a`, `abc`, `abcbc`</td>
+            <td><code>a</code>, <code>abc</code>, <code>abcbc</code></td>
         </tr>
         <tr>
-            <td>`[ab]{2}`</td>
+            <td><code>[ab]{2}</code></td>
             <td>2</td>
-            <td>`aa`, `bb`</td>
+            <td><code>aa</code>, <code>bb</code></td>
         </tr>
         <tr>
-            <td>`ab.`</td>
+            <td><code>ab.</code></td>
             <td>63</td>
-            <td>`abA`, `abB`, `aba`, `ab0`, `ab-`</td>
+            <td><code>abA</code>, <code>abB</code>, <code>aba</code>, <code>ab0</code>, <code>ab-</code>, ...</td>
         </tr>
         <tr>
-            <td>`abc|xyz`</td>
+            <td><code>abc|xyz</code></td>
             <td>2</td>
-            <td>`abc`, `xyz`</td>
+            <td><code>abc</code>, <code>xyz</code></td>
         </tr>
         <tr>
-            <td>`a|b|c`</td>
+            <td><code>a|b|c</code></td>
             <td>3</td>
-            <td>`a`, `b`, `c`</td>
+            <td><code>a</code>, <code>b</code>, <code>c</code></td>
         </tr>
         <tr>
-            <td>`ab(c|d)`</td>
+            <td><code>ab(c|d)</code></td>
             <td>2</td>
-            <td>`abc`, `abd`</td>
+            <td><code>abc</code>, <code>abd</code></td>
         </tr>
         <tr>
-            <td>`ab(cde|[xyz])`</td>
+            <td><code>ab(cde|[xyz])</code></td>
             <td>4</td>
-            <td>`abcde`, `abx`, `aby`, `abz`</td>
+            <td><code>abcde</code>, <code>abx</code>, <code>aby</code>, <code>abz</code></td>
         </tr>
         <tr>
-            <td>`abc?`</td>
+            <td><code>abc?</code></td>
             <td>2</td>
-            <td>`abc`, `ab`</td>
+            <td><code>abc</code>, <code>ab</code></td>
         </tr>
         <tr>
-            <td>`abc(xyz)?`</td>
+            <td><code>abc(xyz)?</code></td>
             <td>2</td>
-            <td>`abc`, `abcxyz`</td>
+            <td><code>abc</code>, <code>abcxyz</code></td>
         </tr>
     </tbody>
 </table>
