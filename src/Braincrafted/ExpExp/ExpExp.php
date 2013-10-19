@@ -23,6 +23,17 @@ class ExpExp
 	/** @var string */
 	public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
 
+	/** @var array */
+	private $classes = [
+		'digit'	=> '0123456789',
+		'lower' => 'abcdefghijklmnopqrstuvwxyz',
+		'upper'	=> 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+		'word'  => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_',
+		'space' => "\t\n\r ",
+		'vspace' => "\n\r",
+		'hspace' => "\t "
+	];
+
 	/** @var integer */
 	private $pos;
 
@@ -75,6 +86,10 @@ class ExpExp
 				$bufferExp = new ExpExp;
 				$buffer = $bufferExp->expand(substr($pattern, $this->pos+1), ']');
 				$buffer = str_split($buffer[0], 1);
+				if (':' === $buffer[0] && ':' === $buffer[count($buffer)-1]) {
+					$buffer = substr(implode('', $buffer), 1, count($buffer)-2);
+					$buffer = str_split($this->getClass($buffer), 1);
+				}
 				$this->pos += $bufferExp->getPos();
 				if ('{' === substr($pattern, $this->pos+1, 1)) {
 					$this->pos += 1;
@@ -89,6 +104,16 @@ class ExpExp
 			} else if (false === $escape && '|' === $char) {
 				$alternateResults[] = $this->result;
 				$this->result = [ '' ];
+			} else if (false !== $escape && 'd' === $char) {
+				$this->addAll(str_split($this->getClass('digit'), 1));
+			} else if (false !== $escape && 'w' === $char) {
+				$this->addAll(str_split($this->getClass('word'), 1));
+			} else if (false !== $escape && 's' === $char) {
+				$this->addAll(str_split($this->getClass('space'), 1));
+			} else if (false !== $escape && 'v' === $char) {
+				$this->addAll(str_split($this->getClass('vspace'), 1));
+			} else if (false !== $escape && 'h' === $char) {
+				$this->addAll(str_split($this->getClass('hspace'), 1));
 			} else {
 				$this->add($char);
 			}
@@ -214,5 +239,19 @@ class ExpExp
 	    }
 
 	    return [ $min, $max ];
+	}
+
+	protected function getClass($name)
+	{
+	    $classes = '';
+
+	    foreach (explode('+', $name) as $className) {
+	    	if (false === isset($this->classes[$className])) {
+		    	throw new \InvalidArgumentException(sprintf('The character class %s does not exist.', $name));
+		    }
+	    	$classes .= $this->classes[$className];
+	    }
+
+	    return $classes;
 	}
 }
