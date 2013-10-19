@@ -20,11 +20,14 @@ namespace Braincrafted\ExpExp;
  */
 class ExpExp
 {
-	/** @var array */
-	private $result = array(), $resultBuffer = array();
-
 	/** @var string */
 	public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
+
+	/** @var integer */
+	private $pos;
+
+	/** @var array */
+	private $result;
 
 	/**
 	 * Expands the pattern.
@@ -33,209 +36,147 @@ class ExpExp
 	 *
 	 * @return array Expanded pattern
 	 */
-	public function expand($pattern)
+	public function expand($pattern, $stopChar = null)
 	{
-		$result = array();
-		$resultBuffer = array();
-		$pos = 0;
+		$this->pos = 0;
+		$this->result = [ '' ];
 		$escape = false;
-		$disjunction = false;
-		$disjunctChars = array();
-		$parentheses = false;
-		$multiplication = false;
-		$buffer = '';
-		$multiplier = '';
+		$alternateResults = [ ];
 
-		while ($pos < strlen($pattern)) {
-			$char = $this->charAt($pattern, $pos);
-			$nextChar = strlen($pattern) > $pos ? $this->charAt($pattern, $pos + 1) : '';
+		while ($this->pos < strlen($pattern)) {
+			$char = substr($pattern, $this->pos, 1);
+			$nextChar = substr($pattern, $this->pos+1, 1);
+
+			if (null !== $stopChar && $char === $stopChar) {
+				$this->pos += 1;
+				break;
+			}
 
 			if (false === $escape && '\\' === $char) {
-				$escape = $pos;
-			} else if (false === $escape && '(' === $char) {
-				$parentheses = true;
-			} else if (false === $escape && true === $disjunction && ']' === $char && '{' === $nextChar) {
-				$multiplication = true;
-			} else if (false === $escape && true === $disjunction && true === $multiplication && '}' === $char) {
-				$multiplier = $this->parseMultiplier($multiplier);
-				$newBuffer = array();
-				for ($i = 0; $i < count($disjunctChars); $i++) {
-					$newBuffer = array_merge($newBuffer, $this->multiply($disjunctChars[$i], $multiplier));
-				}
-				$result = $this->addToAll($result, $newBuffer);
-				$disjunction = false;
-				$multiplication = false;
-			} else if (false === $escape && true === $parentheses && true === $multiplication && '}' === $char) {
-				$multiplier = $this->parseMultiplier($multiplier);
-				$newBuffer = array();
-				for ($i = 0; $i < count($expandedBuffer); $i++) {
-					$newBuffer = array_merge($newBuffer, $this->multiply($expandedBuffer[$i], $multiplier));
-				}
-				$result = $this->addToAll($result, $newBuffer);
-				$parantheses = false;
-				$multiplication = false;
-			} else if (false === $escape && true === $multiplication && '}' === $char) {
-				$multiplier = $this->parseMultiplier($multiplier);
-				$bufferResult = $this->multiply($buffer, $multiplier);
-				$result = $this->addToAll($result, $bufferResult);
-				$multiplication = false;
-			} else if (true === $multiplication && '{' !== $char) {
-				$multiplier = $multiplier.$char;
-			} else if (true === $multiplication) {
-			} else if (false === $escape && true === $parentheses && ')' === $char) {
-				// An open parentheses is closed, expand the pattern inside
-				$bufferExpansion = new ExpExp();
-				$expandedBuffer = $bufferExpansion->expand($buffer);
-				if ('?' === $nextChar) {
-					$expandedBuffer[] = '';
-					$pos++;
-				}
-				if ('{' !== $nextChar) {
-					$result = $this->addToAll($result, $expandedBuffer);
-					$parentheses = false;
-				} else {
-					$multiplication = true;
-				}
-				$buffer = '';
-			} else if (true === $parentheses) {
-				// Inside a parentheses
-				$buffer = $buffer . $char;
+				$escape = $this->pos;
 			} else if (false === $escape && '{' === $nextChar) {
-				$multiplication = true;
-				$buffer = $char;
-			} else if (false === $escape && '[' === $char) {
-				// A disjunction section is about to start
-				$disjunction = true;
-			} else if (false === $escape && true === $disjunction && ']' === $char) {
-				// A disjunction is ending
-				$result = $this->addToAll($result, $disjunctChars);
-				$disjunction = false;
-				$disjunctChars = array();
-			} else if (true === $disjunction) {
-				$disjunctChars[] = $char;
-			} else if (false === $escape && '.' === $char) {
-				$result = $this->addToAll($result, str_split($this->dotChars, 1));
-			} else if (false === $escape && '|' === $char) {
-				$resultBuffer[] = $result;
-				$result = array();
-			} else {
-				if ('?' === $nextChar) {
-					$result = $this->addToAll($result, array($char, ''));
-					$pos++;
-				} else {
-					$result = $this->addChar($result, $char);
+				$this->pos += 1;
+				$buffer = $this->repeat($pattern, $char);
+				$this->addAll($buffer);
+			} else if (false === $escape && '(' === $char) {
+				$bufferExp = new ExpExp;
+				$charBuffer = $bufferExp->expand(substr($pattern, $this->pos+1), ')');
+				$this->pos += $bufferExp->getPos();
+				if ('?' === substr($pattern, $this->pos+1, 1)) {
+					$this->pos += 1;
+					$charBuffer[] = '';
+				} else if ('{' === substr($pattern, $this->pos+1, 1)) {
+					$this->pos += 1;
+					$charBuffer = $this->repeat($pattern, $charBuffer);
 				}
+				$this->addAll($charBuffer);
+			} else if (false === $escape && '[' === $char) {
+				$bufferExp = new ExpExp;
+				$buffer = $bufferExp->expand(substr($pattern, $this->pos+1), ']');
+				$buffer = str_split($buffer[0], 1);
+				$this->pos += $bufferExp->getPos();
+				if ('{' === substr($pattern, $this->pos+1, 1)) {
+					$this->pos += 1;
+					$buffer = $this->repeat($pattern, $buffer);
+				}
+				$this->addAll($buffer);
+			} else if (false === $escape && '?' === $nextChar) {
+				$this->pos += 1;
+				$this->addAll([ $char, '' ]);
+			} else if (false === $escape && '.' === $char) {
+				$this->addAll(str_split($this->dotChars, 1));
+			} else if (false === $escape && '|' === $char) {
+				$alternateResults[] = $this->result;
+				$this->result = [ '' ];
+			} else {
+				$this->add($char);
 			}
 
-			// $escape contains the position when the escape occured, if we passed the escaped characters, reset the flag.
-			if ($pos > $escape) {
+			if ($this->pos > $escape) {
 				$escape = false;
 			}
-
-			$pos++;
+			$this->pos += 1;
 		}
 
-		if (count($resultBuffer) > 0) {
-			$newResult = array();
-			foreach ($resultBuffer as $item) {
-				$newResult = array_merge($newResult, $item);
-			}
-			$result = array_merge($newResult, $result);
-		}
+		$this->mergeResults($alternateResults);
 
-		return $result;
+		return $this->result;
 	}
 
-	/**
-	 * Returns the character at the given position.
-	 *
-	 * @param string  $string   String
-	 * @param integer $position Position
-	 *
-	 * @return string Character
-	 */
-	private function charAt($string, $position)
+	public function getPos()
 	{
-		return substr($string, $position, 1);
+	    return $this->pos;
 	}
 
-	/**
-	 * Adds $char to each element in $array.
-	 *
-	 * @param array  $array Array
-	 * @param string $char  Character
-	 *
-	 * @return array Array with char added
-	 */
-	private function addChar(array $array, $char)
+	protected function mergeResults($alternates)
 	{
-		if (0 === count($array)) {
-			return array($char);
-		}
+		$buffer = [];
 
-		for ($i = 0; $i < count($array); $i++) {
-			$array[$i] .= $char;
-		}
+	    foreach ($alternates as $alternate) {
+	    	$buffer = array_merge($buffer, $alternate);
+	    }
 
-		return $array;
+	    $this->result = array_merge($buffer, $this->result);
 	}
 
-	/**
-	 * Adds each character from $chars to every element from $array.
-	 *
-	 * For example, $array = ['a','b'] and $chars = ['x','y'] would produce
-	 * - ax
-	 * - ay
-	 * - bx
-	 * - by
-	 *
-	 * @param array $array Array of strings
-	 * @param array $chars Array of chars
-	 *
-	 * @return array Array with chars added to strings
-	 */
-	private function addToAll(array $array, array $chars)
+	protected function add($char)
 	{
-		$newArray = array();
+		$buffer = [];
 
-		if (0 === count($array)) {
-			$array = array('');
-		}
+	    for ($i = 0; $i < count($this->result); $i++) {
+	    	$buffer[] = $this->result[$i].$char;
+	    }
 
-		for ($i = 0; $i < count($array); $i++) {
-			for ($j = 0; $j < count($chars); $j++) {
-				$newArray[] = $array[$i] . $chars[$j];
+	    $this->result = $buffer;
+	}
+
+	protected function addAll(array $chars)
+	{
+	    $buffer = [];
+
+	    for ($i = 0; $i < count($this->result); $i++) {
+	    	for ($j = 0; $j < count($chars); $j++) {
+	    		$buffer[] = $this->result[$i].$chars[$j];
+	    	}
+	    }
+
+	    $this->result = $buffer;
+	}
+
+	protected function repeat($pattern, $add)
+	{
+		$bufferExp = new ExpExp;
+		$buffer = $bufferExp->expand(substr($pattern, $this->pos+1), '}')[0];
+		list($min, $max) = $this->parseRepetition($buffer);
+		$this->pos += $bufferExp->getPos();
+		$buffer = [];
+		for ($i = $min; $i <= $max; $i++) {
+			if (true === is_array($add)) {
+				foreach ($add as $el) {
+					$buffer[] = str_repeat($el, $i);
+				}
+			} else {
+				$buffer[] = str_repeat($add, $i);
 			}
 		}
 
-		return $newArray;
+		return $buffer;
 	}
 
-	private function parseMultiplier($multiplier)
+	protected function parseRepetition($string)
 	{
-	    if (0 === strlen($multiplier)) {
-	    	return array(1, 1);
+		if (0 === strlen($string)) {
+			return [ 1, 1 ];
+		}
+	    if (false === strpos($string, ',')) {
+	    	return [ $string, $string ];
 	    }
-	    if (false === strpos($multiplier, ',')) {
-	    	return array($multiplier, $multiplier);
-	    }
-	    list($min, $max) = explode(',', $multiplier);
-	    if (0 === strlen($min)) {
+
+	    list($min, $max) = explode(',', $string);
+	    if (!$min) {
 	    	$min = 0;
 	    }
-	    if (0 === strlen($max)) {
-	    }
 
-	    return array($min, $max);
-	}
-
-	private function multiply($string, array $multiplier)
-	{
-		$result = array();
-	    for ($i = $multiplier[0]; $i <= $multiplier[1]; $i++) {
-	    	$result[] = str_repeat($string, $i);
-	    }
-
-	    return $result;
+	    return [ $min, $max ];
 	}
 }

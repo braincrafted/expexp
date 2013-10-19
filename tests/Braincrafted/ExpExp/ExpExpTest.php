@@ -49,6 +49,10 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
     public function expandProvider()
     {
         return [
+            [ 'abc', 1, [ 'abc' ] ],
+            // Parentheses
+            [ 'ab(c)', 1, [ 'abc' ] ],
+            // [ 'a(b(c))', 1, [ 'abc' ] ],
             // Disjunction
             [ '[abc]', 3, [ 'a', 'b', 'c' ] ],
             [ '[abc]x[abc]', 9, [ 'axa', 'axb', 'axc', 'bxa', 'bxb', 'bxc', 'cxa', 'cxb', 'cxc' ] ],
@@ -57,9 +61,6 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ 'a{}', 1, [ 'a' ] ],
             [ 'a{1,3}', 3, [ 'a', 'aa', 'aaa' ] ],
             [ 'a{,3}', 4, [ '', 'a', 'aa', 'aaa' ] ],
-            // Parentheses
-            [ 'ab(c)', 1, [ 'abc' ] ],
-            // [ 'a(b(c))', 1, [ 'abc' ] ],
             // Parentheses + repetition
             [ 'a(bc){2}', 1, [ 'abcbc' ] ],
             [ 'a(bc){1,2}', 2, [ 'abc', 'abcbc' ] ],
@@ -71,6 +72,7 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ 'ab.', 63, [ 'abA', 'abB', 'aba', 'ab0', 'ab-' ] ],
             // Alternation
             [ 'abc|xyz', 2, [ 'abc', 'xyz' ] ],
+            [ 'a|b|c', 3, [ 'a', 'b', 'c' ] ],
             // Alternation in parentheses
             [ 'ab(c|d)', 2, [ 'abc', 'abd' ] ],
             // [ 'a(b|(c|d))', 3, [ 'ab', 'ac', 'ad' ] ],
