@@ -51,9 +51,9 @@ will be expanded to
 
 - `abc`
 
-**Multiplication:**
+**Repetition:**
 
-The multiplication operator allows to repeat the previous character. If only one value is given the previous character is repeated that often, if two values are given the character is multiplied with each value in the given range. `{,3}` is the same as `{0,3}`.
+The repetition operator allows to repeat the previous character(s). If only one value is given the previous character is repeated that often, if two values are given the character is multiplied with each value in the given range. `{,3}` is the same as `{0,3}`.
 
     a{3}
 
@@ -102,6 +102,113 @@ will be expanded to
 
 The optional operator has thus the same effect as `{0,1}`.
 
+
+More examples
+-------------
+
+<table>
+    <thead>
+        <tr>
+            <th>Pattern</th>
+            <th>Count</th>
+            <th>Expansion</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`abc`</td>
+            <td>1</td>
+            <td>`abc`</td>
+        </tr>
+        <tr>
+            <td>`ab(c)`</td>
+            <td>1</td>
+            <td>`abc`</td>
+        </tr>
+        <tr>
+            <td>`[abc]`</td>
+            <td>3</td>
+            <td>`a`, `b`, `c`</td>
+        </tr>
+        <tr>
+            <td>`a{3}`</td>
+            <td>1</td>
+            <td>`aaa`</td>
+        </tr>
+        <tr>
+            <td>`a{}`</td>
+            <td>1</td>
+            <td>`a`</td>
+        </tr>
+        <tr>
+            <td>`a{1,3}`</td>
+            <td>3</td>
+            <td>`a`, `aa`, `aaa`</td>
+        </tr>
+        <tr>
+            <td>`a{,3}`</td>
+            <td>4</td>
+            <td>``, `a`, `aa`, `aaa`</td>
+        </tr>
+        <tr>
+            <td>`a(bc){2}`</td>
+            <td>1</td>
+            <td>`abcbc`</td>
+        </tr>
+        <tr>
+            <td>`a(bc){1,2}`</td>
+            <td>2</td>
+            <td>`abcbc`, `abc`</td>
+        </tr>
+        <tr>
+            <td>`a(bc){,2}`</td>
+            <td>3</td>
+            <td>`a`, `abc`, `abcbc`</td>
+        </tr>
+        <tr>
+            <td>`[ab]{2}`</td>
+            <td>2</td>
+            <td>`aa`, `bb`</td>
+        </tr>
+        <tr>
+            <td>`ab.`</td>
+            <td>63</td>
+            <td>`abA`, `abB`, `aba`, `ab0`, `ab-`</td>
+        </tr>
+        <tr>
+            <td>`abc|xyz`</td>
+            <td>2</td>
+            <td>`abc`, `xyz`</td>
+        </tr>
+        <tr>
+            <td>`a|b|c`</td>
+            <td>3</td>
+            <td>`a`, `b`, `c`</td>
+        </tr>
+        <tr>
+            <td>`ab(c|d)`</td>
+            <td>2</td>
+            <td>`abc`, `abd`</td>
+        </tr>
+        <tr>
+            <td>`ab(cde|[xyz])`</td>
+            <td>4</td>
+            <td>`abcde`, `abx`, `aby`, `abz`</td>
+        </tr>
+        <tr>
+            <td>`abc?`</td>
+            <td>2</td>
+            <td>`abc`, `ab`</td>
+        </tr>
+        <tr>
+            <td>`abc(xyz)?`</td>
+            <td>2</td>
+            <td>`abc`, `abcxyz`</td>
+        </tr>
+    </tbody>
+</table>
+
+
 Usage
 -----
 
@@ -117,6 +224,13 @@ More examples can be found in the test cases.
 
 Changelog
 ---------
+
+### Version 0.2 (2013-10-19)
+
+- Changed namespace to `Braincrafted`
+- Added repetition operator `{}`
+- Completely rewritten to be easier and better extensible
+- Improved test suite
 
 ### Version 0.1.1 (2013-10-16)
 
