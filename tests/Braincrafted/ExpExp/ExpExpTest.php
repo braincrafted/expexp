@@ -46,6 +46,20 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @dataProvider expandProvider
+     */
+    public function testCompatibility($pattern, $x, $y)
+    {
+        $result = $this->exp->expand($pattern);
+
+        foreach ($result as $element) {
+            if (0 === preg_match(sprintf('/%s/', $pattern), $element)) {
+                $this->fail(sprintf('Result "%s" does not match pattern "%s"', $element, $pattern));
+            }
+        }
+    }
+
     public function expandProvider()
     {
         return [
@@ -58,13 +72,13 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ '[abc]x[abc]', 9, [ 'axa', 'axb', 'axc', 'bxa', 'bxb', 'bxc', 'cxa', 'cxb', 'cxc' ] ],
             // Repetition
             [ 'a{3}', 1, [ 'aaa' ] ],
-            [ 'a{}', 1, [ 'a' ] ],
+            [ 'a{0}', 1, [ '' ] ],
             [ 'a{1,3}', 3, [ 'a', 'aa', 'aaa' ] ],
-            [ 'a{,3}', 4, [ '', 'a', 'aa', 'aaa' ] ],
+            [ 'a{0,3}', 4, [ '', 'a', 'aa', 'aaa' ] ],
             // Parentheses + repetition
             [ 'a(bc){2}', 1, [ 'abcbc' ] ],
             [ 'a(bc){1,2}', 2, [ 'abc', 'abcbc' ] ],
-            [ 'a(bc){,2}', 3, [ 'a', 'abc', 'abcbc' ] ],
+            [ 'a(bc){0,2}', 3, [ 'a', 'abc', 'abcbc' ] ],
             // Disjunction + repetition
             [ '[ab]{2}', 2, [ 'aa', 'bb' ] ],
             [ '[ab]{0,2}', 6, [ '', 'a', 'aa', 'b', 'bb' ] ],
@@ -88,14 +102,12 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ '\v', 2, [ "\n", "\r" ] ],
             [ '\h', 2, [ "\t", " " ] ],
             // Named character classes
-            [ '[:digit:]', 10, [ '0', '1', '9' ] ],
-            [ '[:lower:]', 26, [ 'a', 'b', 'z' ] ],
-            [ '[:upper:]', 26, [ 'A', 'B', 'Z' ] ],
-            [ '[:word:]', 63, [] ],
-            [ '[:space:]', 4, [] ],
-            [ '[:vspace:]', 2, [] ],
-            [ '[:hspace:]', 2, [] ],
-            [ '[:lower+upper:]', 52, [] ],
+            [ '[[:digit:]]', 10, [ '0', '1', '9' ] ],
+            [ '[[:lower:]]', 26, [ 'a', 'b', 'z' ] ],
+            [ '[[:upper:]]', 26, [ 'A', 'B', 'Z' ] ],
+            [ '[[:word:]]', 63, [] ],
+            [ '[[:space:]]', 4, [] ],
+            [ '[[:lower:][:upper:]]', 52, [] ],
             // Escaped control characters
             [ '\[abc\]x', 1, [ '[abc]x' ] ],
             [ '\[abc]x', 1, [ '[abc]x' ] ],
@@ -105,7 +117,6 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ 'ab\.', 1, [ 'ab.' ] ],
             [ 'a\|b', 1, [ 'a|b' ] ],
             [ '\(a\)', 1, [ '(a)' ] ],
-            [ '\(a)', 1, [ '(a)' ] ],
             [ '\\\abc', 1, [ '\abc' ] ]
         ];
     }

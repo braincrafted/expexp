@@ -20,12 +20,12 @@ namespace Braincrafted\ExpExp;
  */
 class ExpExp
 {
-	/** @var string */
-	public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
+    /** @var string */
+    public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
 
-	/** @var array */
-	private $classes = [
-		'digit'	=> '0123456789',
+    /** @var array */
+    private $classes = [
+        'digit'	=> '0123456789',
 		'lower' => 'abcdefghijklmnopqrstuvwxyz',
 		'upper'	=> 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 		'word'  => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_',
@@ -82,14 +82,17 @@ class ExpExp
 					$charBuffer = $this->repeat($pattern, $charBuffer);
 				}
 				$this->addAll($charBuffer);
-			} else if (false === $escape && '[' === $char) {
+			} else if (false === $escape && '[' === $char && ':' !== $nextChar) {
 				$bufferExp = new ExpExp;
 				$buffer = $bufferExp->expand(substr($pattern, $this->pos+1), ']');
+				$buffer[0] = preg_replace_callback(
+					'/(\[:([a-z]+):\])/',
+					function ($matches) {
+						return $this->getClass($matches[2]);
+					},
+					$buffer[0]
+				);
 				$buffer = str_split($buffer[0], 1);
-				if (':' === $buffer[0] && ':' === $buffer[count($buffer)-1]) {
-					$buffer = substr(implode('', $buffer), 1, count($buffer)-2);
-					$buffer = str_split($this->getClass($buffer), 1);
-				}
 				$this->pos += $bufferExp->getPos();
 				if ('{' === substr($pattern, $this->pos+1, 1)) {
 					$this->pos += 1;
@@ -114,6 +117,9 @@ class ExpExp
 				$this->addAll(str_split($this->getClass('vspace'), 1));
 			} else if (false !== $escape && 'h' === $char) {
 				$this->addAll(str_split($this->getClass('hspace'), 1));
+			} else if (false === $escape && ':' === $char && ']' == $nextChar) {
+				$this->pos += 1;
+				$this->add(':]');
 			} else {
 				$this->add($char);
 			}
@@ -229,7 +235,7 @@ class ExpExp
 	protected function parseRepetition($string)
 	{
 		if (0 === strlen($string)) {
-			return [ 1, 1 ];
+			return [ 0, 0 ];
 		}
 	    if (false === strpos($string, ',')) {
 	    	return [ $string, $string ];
@@ -251,15 +257,9 @@ class ExpExp
 	 */
 	protected function getClass($name)
 	{
-	    $classes = '';
-
-	    foreach (explode('+', $name) as $className) {
-	    	if (false === isset($this->classes[$className])) {
-		    	throw new \InvalidArgumentException(sprintf('The character class %s does not exist.', $name));
-		    }
-	    	$classes .= $this->classes[$className];
+    	if (false === isset($this->classes[$name])) {
+	    	throw new \InvalidArgumentException(sprintf('The character class %s does not exist.', $name));
 	    }
-
-	    return $classes;
+	    return $this->classes[$name];
 	}
 }
