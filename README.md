@@ -55,7 +55,7 @@ will be expanded to
 - `abcB`
 - …
 
-The Dot opterator does not expand to every character, but only to `A-Za-z0-9-`.
+The Dot opterator does not expand to every character, but only to `A-Za-z0-9_`.
 
 **Parantheses:**
 
@@ -187,7 +187,7 @@ More examples
         <tr>
             <td><code>ab.</code></td>
             <td>63</td>
-            <td><code>abA</code>, <code>abB</code>, <code>aba</code>, <code>ab0</code>, <code>ab-</code>, ...</td>
+            <td><code>abA</code>, <code>abB</code>, <code>aba</code>, <code>ab0</code>, <code>ab_</code>, ...</td>
         </tr>
         <tr>
             <td><code>abc|xyz</code></td>
@@ -238,6 +238,10 @@ More examples can be found in the test cases.
 
 Changelog
 ---------
+
+### Version 0.2.2 (2013-10-20)
+
+- Dot operator matches `word` character class
 
 ### Version 0.2.1 (2013-10-19)
 
