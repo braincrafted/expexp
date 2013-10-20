@@ -21,7 +21,7 @@ namespace Braincrafted\ExpExp;
 class ExpExp
 {
     /** @var string */
-    public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-';
+    public $dotChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_';
 
     /** @var array */
     private $classes = [

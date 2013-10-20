@@ -52,7 +52,6 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
     public function testCompatibility($pattern, $x, $y)
     {
         $result = $this->exp->expand($pattern);
-        print_r($result);
 
         foreach ($result as $element) {
             if (0 === preg_match(sprintf('/%s/', $pattern), $element)) {
@@ -84,7 +83,7 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ '[ab]{2}', 2, [ 'aa', 'bb' ] ],
             [ '[ab]{0,2}', 6, [ '', 'a', 'aa', 'b', 'bb' ] ],
             // Dot operator
-            [ 'ab.', 63, [ 'abA', 'abB', 'aba', 'ab0', 'ab-' ] ],
+            [ 'ab.', 63, [ 'abA', 'abB', 'aba', 'ab0', 'ab_' ] ],
             // Alternation
             [ 'abc|xyz', 2, [ 'abc', 'xyz' ] ],
             [ 'a|b|c', 3, [ 'a', 'b', 'c' ] ],
