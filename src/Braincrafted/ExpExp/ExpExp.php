@@ -98,13 +98,12 @@ class ExpExp
     /**
      * Expands an escaped character.
      *
-     * @param string $pattern  Pattern
      * @param string $char     Current character
      * @param string $nextChar Next character
      *
      * @return void
      */
-    protected function expandEscapedCharacter($pattern, $char, $nextChar)
+    protected function expandEscapedCharacter($char, $nextChar)
     {
         if ('d' === $char) {
             $this->addAll(str_split($this->getClass('digit'), 1));
