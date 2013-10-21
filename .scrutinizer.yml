@@ -1,4 +1,4 @@
-    excluded_paths:
+excluded_paths:
         - 'vendor/*'
     paths:
         - 'src/*'
