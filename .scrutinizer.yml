@@ -1,8 +1,9 @@
-excluded_paths:
-    - 'vendor/*'
-paths:
-    - 'src/*'
-    - 'tests/*'
+filter:
+    excluded_paths:
+        - 'vendor/*'
+    paths:
+        - 'src/*'
+        - 'tests/*'
 before_commands:
     - 'composer install --prefer-source'
 tools:
