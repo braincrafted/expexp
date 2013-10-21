@@ -41,6 +41,9 @@ class ExpExp
     /** @var array */
     private $result;
 
+    /** @var array */
+    private $alternateResults;
+
     /**
      * Expands the pattern.
      *
@@ -54,7 +57,7 @@ class ExpExp
         $this->pos = 0;
         $this->result = [ '' ];
         $escape = false;
-        $alternateResults = [ ];
+        $this->alternateResults = [ ];
 
         while ($this->pos < strlen($pattern)) {
             $char = substr($pattern, $this->pos, 1);
@@ -65,64 +68,10 @@ class ExpExp
                 break;
             }
 
-            if (false === $escape && '\\' === $char) {
-                $escape = $this->pos;
-            } else if (false === $escape && '{' === $nextChar) {
-                $this->pos += 1;
-                $buffer = $this->repeat($pattern, $char);
-                $this->addAll($buffer);
-            } else if (false === $escape && '(' === $char) {
-                $bufferExp = new ExpExp;
-                $charBuffer = $bufferExp->expand(substr($pattern, $this->pos+1), ')');
-                $this->pos += $bufferExp->getPos();
-                if ('?' === substr($pattern, $this->pos+1, 1)) {
-                    $this->pos += 1;
-                    $charBuffer[] = '';
-                } else if ('{' === substr($pattern, $this->pos+1, 1)) {
-                    $this->pos += 1;
-                    $charBuffer = $this->repeat($pattern, $charBuffer);
-                }
-                $this->addAll($charBuffer);
-            } else if (false === $escape && '[' === $char && ':' !== $nextChar) {
-                $bufferExp = new ExpExp;
-                $buffer = $bufferExp->expand(substr($pattern, $this->pos+1), ']');
-                $buffer[0] = preg_replace_callback(
-                    '/(\[:([a-z]+):\])/',
-                    function ($matches) {
-                        return $this->getClass($matches[2]);
-                    },
-                    $buffer[0]
-                );
-                $buffer = str_split($buffer[0], 1);
-                $this->pos += $bufferExp->getPos();
-                if ('{' === substr($pattern, $this->pos+1, 1)) {
-                    $this->pos += 1;
-                    $buffer = $this->repeat($pattern, $buffer);
-                }
-                $this->addAll($buffer);
-            } else if (false === $escape && '?' === $nextChar) {
-                $this->pos += 1;
-                $this->addAll([ $char, '' ]);
-            } else if (false === $escape && '.' === $char) {
-                $this->addAll(str_split($this->dotChars, 1));
-            } else if (false === $escape && '|' === $char) {
-                $alternateResults[] = $this->result;
-                $this->result = [ '' ];
-            } else if (false !== $escape && 'd' === $char) {
-                $this->addAll(str_split($this->getClass('digit'), 1));
-            } else if (false !== $escape && 'w' === $char) {
-                $this->addAll(str_split($this->getClass('word'), 1));
-            } else if (false !== $escape && 's' === $char) {
-                $this->addAll(str_split($this->getClass('space'), 1));
-            } else if (false !== $escape && 'v' === $char) {
-                $this->addAll(str_split($this->getClass('vspace'), 1));
-            } else if (false !== $escape && 'h' === $char) {
-                $this->addAll(str_split($this->getClass('hspace'), 1));
-            } else if (false === $escape && ':' === $char && ']' == $nextChar) {
-                $this->pos += 1;
-                $this->add(':]');
+            if (false === $escape) {
+                $escape = $this->expandCharacter($pattern, $char, $nextChar);
             } else {
-                $this->add($char);
+                $this->expandEscapedCharacter($pattern, $char, $nextChar);
             }
 
             if ($this->pos > $escape) {
@@ -131,7 +80,7 @@ class ExpExp
             $this->pos += 1;
         }
 
-        $this->mergeResults($alternateResults);
+        $this->mergeResults($this->alternateResults);
 
         return $this->result;
     }
@@ -144,6 +93,122 @@ class ExpExp
     public function getPos()
     {
         return $this->pos;
+    }
+
+    /**
+     * Expands an escaped character.
+     *
+     * @param string $pattern  Pattern
+     * @param string $char     Current character
+     * @param string $nextChar Next character
+     *
+     * @return void
+     */
+    protected function expandEscapedCharacter($pattern, $char, $nextChar)
+    {
+        if ('d' === $char) {
+            $this->addAll(str_split($this->getClass('digit'), 1));
+        } elseif ('w' === $char) {
+            $this->addAll(str_split($this->getClass('word'), 1));
+        } elseif ('s' === $char) {
+            $this->addAll(str_split($this->getClass('space'), 1));
+        } elseif ('v' === $char) {
+            $this->addAll(str_split($this->getClass('vspace'), 1));
+        } elseif ('h' === $char) {
+            $this->addAll(str_split($this->getClass('hspace'), 1));
+        } else {
+            $this->add($char);
+        }
+    }
+
+    /**
+     * Expands a character.
+     *
+     * @param string $pattern  Pattern
+     * @param string $char     Current character
+     * @param string $nextChar Next character
+     *
+     * @return boolean|integer FALSE if the current character is not the escape character, otherwise the position
+     */
+    protected function expandCharacter($pattern, $char, $nextChar)
+    {
+        $escape = false;
+
+        if ('\\' === $char) {
+            $escape = $this->pos;
+        } elseif ('{' === $nextChar) {
+            $this->pos += 1;
+            $buffer = $this->repeat($pattern, $char);
+            $this->addAll($buffer);
+        } elseif ('(' === $char) {
+            $this->expandParentheses($pattern);
+        } elseif ('[' === $char && ':' !== $nextChar) {
+            $this->expandDisjunction($pattern);
+        } elseif ('?' === $nextChar) {
+            $this->pos += 1;
+            $this->addAll([ $char, '' ]);
+        } elseif ('.' === $char) {
+            $this->addAll(str_split($this->dotChars, 1));
+        } elseif ('|' === $char) {
+            $this->alternateResults[] = $this->result;
+            $this->result = [ '' ];
+        } elseif (':' === $char && ']' == $nextChar) {
+            $this->pos += 1;
+            $this->add(':]');
+        } else {
+            $this->add($char);
+        }
+
+        return $escape;
+    }
+
+    /**
+     * Expands the content of parentheses.
+     *
+     * @param string $pattern Pattern
+     *
+     * @return void
+     */
+    protected function expandParentheses($pattern)
+    {
+        $bufferExp = new ExpExp;
+        $charBuffer = $bufferExp->expand(substr($pattern, $this->pos+1), ')');
+        $this->pos += $bufferExp->getPos();
+        if ('?' === substr($pattern, $this->pos+1, 1)) {
+            $this->pos += 1;
+            $charBuffer[] = '';
+        } elseif ('{' === substr($pattern, $this->pos+1, 1)) {
+            $this->pos += 1;
+            $charBuffer = $this->repeat($pattern, $charBuffer);
+        }
+        $this->addAll($charBuffer);
+    }
+
+    /**
+     * Expands a disjunction.
+     *
+     * @param string $pattern Pattern
+     *
+     * @return void
+     */
+    protected function expandDisjunction($pattern)
+    {
+        $bufferExp = new ExpExp;
+        $buffer = $bufferExp->expand(substr($pattern, $this->pos+1), ']');
+        $buffer[0] = preg_replace_callback(
+            '/(\[:([a-z]+):\])/',
+            function ($matches) {
+                return $this->getClass($matches[2]);
+            },
+            $buffer[0]
+        );
+        $buffer = str_split($buffer[0], 1);
+        $this->pos += $bufferExp->getPos();
+        if ('{' === substr($pattern, $this->pos+1, 1)) {
+            $this->pos += 1;
+            $buffer = $this->repeat($pattern, $buffer);
+        }
+        $this->addAll($buffer);
     }
 
     /**
