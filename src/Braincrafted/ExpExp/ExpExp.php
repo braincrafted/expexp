@@ -44,6 +44,9 @@ class ExpExp
     /** @var array */
     private $alternateResults;
 
+    /** @var false|integer */
+    private $escape;
+
     /**
      * Expands the pattern.
      *
@@ -56,7 +59,7 @@ class ExpExp
     {
         $this->pos = 0;
         $this->result = [ '' ];
-        $escape = false;
+        $this->escape = false;
         $this->alternateResults = [ ];
 
         while ($this->pos < strlen($pattern)) {
@@ -68,14 +71,14 @@ class ExpExp
                 break;
             }
 
-            if (false === $escape) {
-                $escape = $this->expandCharacter($pattern, $char, $nextChar);
+            if (false === $this->escape) {
+                $this->expandCharacter($pattern);
             } else {
-                $this->expandEscapedCharacter($pattern, $char, $nextChar);
+                $this->expandEscapedCharacter($char);
             }
 
-            if ($this->pos > $escape) {
-                $escape = false;
+            if ($this->pos > $this->escape) {
+                $this->escape = false;
             }
             $this->pos += 1;
         }
@@ -96,45 +99,17 @@ class ExpExp
     }
 
     /**
-     * Expands an escaped character.
+     * Expands the given character.
      *
-     * @param string $char     Current character
-     * @param string $nextChar Next character
-     *
-     * @return void
+     * @param string $pattern Pattern
      */
-    protected function expandEscapedCharacter($char, $nextChar)
+    protected function expandCharacter($pattern)
     {
-        if ('d' === $char) {
-            $this->addAll(str_split($this->getClass('digit'), 1));
-        } elseif ('w' === $char) {
-            $this->addAll(str_split($this->getClass('word'), 1));
-        } elseif ('s' === $char) {
-            $this->addAll(str_split($this->getClass('space'), 1));
-        } elseif ('v' === $char) {
-            $this->addAll(str_split($this->getClass('vspace'), 1));
-        } elseif ('h' === $char) {
-            $this->addAll(str_split($this->getClass('hspace'), 1));
-        } else {
-            $this->add($char);
-        }
-    }
-
-    /**
-     * Expands a character.
-     *
-     * @param string $pattern  Pattern
-     * @param string $char     Current character
-     * @param string $nextChar Next character
-     *
-     * @return boolean|integer FALSE if the current character is not the escape character, otherwise the position
-     */
-    protected function expandCharacter($pattern, $char, $nextChar)
-    {
-        $escape = false;
+        $char = substr($pattern, $this->pos, 1);
+        $nextChar = substr($pattern, $this->pos+1, 1);
 
         if ('\\' === $char) {
-            $escape = $this->pos;
+            $this->escape = $this->pos;
         } elseif ('{' === $nextChar) {
             $this->pos += 1;
             $buffer = $this->repeat($pattern, $char);
@@ -157,8 +132,28 @@ class ExpExp
         } else {
             $this->add($char);
         }
+    }
 
-        return $escape;
+    /**
+     * Expands the given escaped character.
+     *
+     * @param string $char Current character
+     */
+    protected function expandEscapedCharacter($char)
+    {
+        if ('d' === $char) {
+            $this->addAll(str_split($this->getClass('digit'), 1));
+        } elseif ('w' === $char) {
+            $this->addAll(str_split($this->getClass('word'), 1));
+        } elseif ('s' === $char) {
+            $this->addAll(str_split($this->getClass('space'), 1));
+        } elseif ('v' === $char) {
+            $this->addAll(str_split($this->getClass('vspace'), 1));
+        } elseif ('h' === $char) {
+            $this->addAll(str_split($this->getClass('hspace'), 1));
+        } else {
+            $this->add($char);
+        }
     }
 
     /**
