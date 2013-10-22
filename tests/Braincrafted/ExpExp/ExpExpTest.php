@@ -49,7 +49,7 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider expandProvider
      */
-    public function testCompatibility($pattern, $x, $y)
+    public function testCompatibility($pattern, $expectedCount, array $elements)
     {
         $result = $this->exp->expand($pattern);
 

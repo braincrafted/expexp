@@ -64,7 +64,6 @@ class ExpExp
 
         while ($this->pos < strlen($pattern)) {
             $char = substr($pattern, $this->pos, 1);
-            $nextChar = substr($pattern, $this->pos+1, 1);
 
             if (null !== $stopChar && $char === $stopChar) {
                 $this->pos += 1;
