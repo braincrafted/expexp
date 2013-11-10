@@ -10,6 +10,8 @@ For example `ab(cd|[xy])` expands to
 - `aby`.
 
 [![Build Status](https://travis-ci.org/braincrafted/expexp.png?branch=master)](https://travis-ci.org/braincrafted/expexp)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/braincrafted/expexp/badges/quality-score.png?s=5a34a2a951572f0b1c5eebf5803c756c6d15fc32)](https://scrutinizer-ci.com/g/braincrafted/expexp/)
+[![Code Coverage](https://scrutinizer-ci.com/g/braincrafted/expexp/badges/coverage.png?s=7b1c10126404a7f6e8c816edb239e89c82ef9c8a)](https://scrutinizer-ci.com/g/braincrafted/expexp/)
 
 Author
 ------
