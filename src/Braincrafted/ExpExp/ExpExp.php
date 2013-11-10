@@ -50,10 +50,10 @@ class ExpExp
     /**
      * Expands the pattern.
      *
-     * @param string $pattern  Pattern
-     * @param string $stopChar Character on which the expansion should stop
+     * @param string $pattern  Pattern.
+     * @param string $stopChar Character on which the expansion should stop.
      *
-     * @return array Expanded pattern
+     * @return array Expanded pattern.
      */
     public function expand($pattern, $stopChar = null)
     {
@@ -88,9 +88,9 @@ class ExpExp
     }
 
     /**
-     * Returns the current position of the expansion
+     * Returns the current position of the expansion.
      *
-     * @return integer Current position of the expansion
+     * @return integer Current position of the expansion.
      */
     public function getPos()
     {
@@ -100,7 +100,7 @@ class ExpExp
     /**
      * Expands the given character.
      *
-     * @param string $pattern Pattern
+     * @param string $pattern Pattern.
      */
     protected function expandCharacter($pattern)
     {
@@ -136,7 +136,7 @@ class ExpExp
     /**
      * Expands the given escaped character.
      *
-     * @param string $char Current character
+     * @param string $char Current character.
      */
     protected function expandEscapedCharacter($char)
     {
@@ -158,7 +158,7 @@ class ExpExp
     /**
      * Expands the content of parentheses.
      *
-     * @param string $pattern Pattern
+     * @param string $pattern Pattern.
      *
      * @return void
      */
@@ -180,7 +180,7 @@ class ExpExp
     /**
      * Expands a disjunction.
      *
-     * @param string $pattern Pattern
+     * @param string $pattern Pattern.
      *
      * @return void
      */
@@ -207,7 +207,7 @@ class ExpExp
     /**
      * Merges the results from the given alternatives with the result.
      *
-     * @param array $alternates List of alternate results
+     * @param array $alternates List of alternate results.
      */
     protected function mergeResults($alternates)
     {
@@ -223,7 +223,7 @@ class ExpExp
     /**
      * Adds the given string to every element in the result.
      *
-     * @param string $string String to add to the result
+     * @param string $string String to add to the result.
      */
     protected function add($string)
     {
@@ -239,7 +239,7 @@ class ExpExp
     /**
      * Adds all given strings to every element in the result.
      *
-     * @param array $strings Array of strings to add to the result
+     * @param array $strings Array of strings to add to the result.
      */
     protected function addAll(array $strings)
     {
@@ -257,10 +257,10 @@ class ExpExp
     /**
      * Repeats the given string depending on the given pattern.
      *
-     * @param string $pattern Pattern
-     * @param string $add     String to repeat
+     * @param string $pattern Pattern.
+     * @param string $add     String to repeat.
      *
-     * @return array Result of the repetition
+     * @return array Result of the repetition.
      */
     protected function repeat($pattern, $add)
     {
@@ -287,9 +287,9 @@ class ExpExp
     /**
      * Parses the min and max values from the given repetition pattern.
      *
-     * @param string $string Repetition pattern
+     * @param string $string Repetition pattern.
      *
-     * @return array Array with two values, min and max
+     * @return array Array with two values, min and max.
      */
     protected function parseRepetition($string)
     {
@@ -311,8 +311,11 @@ class ExpExp
     /**
      * Returns the character class(es) with the given name(s). Multiple classes can be connected by +.
      *
-     * @param string $name Character class or list of character classes
-     * @return string List of characters from the given class(es)
+     * @param string $name Character class or list of character classes.
+     *
+     * @return string List of characters from the given class(es).
+     *
+     * @throws \InvalidArgumentException if the character class does not exist.
      */
     protected function getClass($name)
     {

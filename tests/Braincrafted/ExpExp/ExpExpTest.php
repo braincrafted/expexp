@@ -34,7 +34,16 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers Braincrafted\ExpExp\ExpExp::expand()
-     * @dataProvider expandProvider
+     * @covers Braincrafted\ExpExp\ExpExp::expandCharacter()
+     * @covers Braincrafted\ExpExp\ExpExp::expandEscapedCharacter()
+     * @covers Braincrafted\ExpExp\ExpExp::expandParentheses()
+     * @covers Braincrafted\ExpExp\ExpExp::mergeResults()
+     * @covers Braincrafted\ExpExp\ExpExp::add()
+     * @covers Braincrafted\ExpExp\ExpExp::addAll()
+     * @covers Braincrafted\ExpExp\ExpExp::repeat()
+     * @covers Braincrafted\ExpExp\ExpExp::parseRepetition()
+     * @covers Braincrafted\ExpExp\ExpExp::getClass()
+     * @dataProvider expandAllProvider
      */
     public function testExpand($pattern, $expectedCount, array $elements)
     {
@@ -58,6 +67,16 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
                 $this->fail(sprintf('Result "%s" does not match pattern "%s"', $element, $pattern));
             }
         }
+    }
+
+    /**
+     * @covers Braincrafted\ExpExp\ExpExp::expand()
+     * @covers Braincrafted\ExpExp\ExpExp::getClass()
+     * @expectedException \InvalidArgumentException
+     */
+    public function testExpandInvalidClassName()
+    {
+        $this->exp->expand('[[:invalid:]]');
     }
 
     public function expandProvider()
@@ -120,5 +139,12 @@ class ExpExpTest extends \PHPUnit_Framework_TestCase
             [ '\(a\)', 1, [ '(a)' ] ],
             [ '\\\abc', 1, [ '\abc' ] ]
         ];
+    }
+
+    public function expandAllProvider()
+    {
+        return array_merge($this->expandProvider(), [
+            [ 'a{}', 1, [ '' ] ],
+        ]);
     }
 }
