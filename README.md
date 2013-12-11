@@ -273,3 +273,7 @@ License
 
 ExpExp is licensed under The MIT License. See the `LICENSE` file in the projects root directory for more information.
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/braincrafted/expexp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
